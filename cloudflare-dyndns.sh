@@ -46,6 +46,7 @@ do
 	links_IPv4
 done
 
+echo
 
 links_IPv6
 while [ "x${IPv6}" = "x" -a "${COUNTER_V6}" -gt "0" ]
@@ -59,6 +60,7 @@ done
 #==============================================================================#
 ### Get ZONE_ID
 
+echo
 echo "#==============================================================================#"
 
 ZONE_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select(.name == \"${ZONE_NAME}\") | .id")"
