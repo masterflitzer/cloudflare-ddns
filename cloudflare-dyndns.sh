@@ -5,6 +5,7 @@
 INTERVAL="5"
 COUNTER="10"
 
+# custom API-Token (not global API-Key)
 # following permissions needed: #dns_records:edit
 API_TOKEN="1234567893feefc5f0q5000bfo0c38d90bbeb"
 # when you want to update "www.example.com", "www" is the RECORD_NAME and "example.com" is the ZONE_NAME
