@@ -62,7 +62,7 @@ done
 
 echo "#==============================================================================#"
 
-ZONE_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones" -H "X-Auth-Email: ${EMAIL}" -H "X-Auth-Key: ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r '.result[] | .id')"
+ZONE_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones" -H "X-Auth-Email: ${EMAIL}" -H "X-Auth-Key: ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r '.result[] | select(.name == \"${ZONE_NAME}\") | .id')"
 echo
 echo "1. ZONE_NAME='${ZONE_NAME}'"
 echo "2. ZONE_ID='${ZONE_ID}'"
