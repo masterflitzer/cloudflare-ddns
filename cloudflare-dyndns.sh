@@ -6,12 +6,12 @@ INTERVAL="5"
 COUNTER="10"
 
 # following permissions needed: #dns_records:edit
-API_TOKEN=""
+API_TOKEN="1234567893feefc5f0q5000bfo0c38d90bbeb"
 # when you want to update "www.example.com", "www" is the RECORD_NAME and "example.com" is the ZONE_NAME
-ZONE_NAME=""
+ZONE_NAME="example.com"
 # multiple record names separated by space, e.g. "www mail smtp"
-RECORD_NAME_V4=""
-RECORD_NAME_V6=""
+RECORD_NAME_V4="www mail smtp"
+RECORD_NAME_V6="www mail smtp"
 TTL="1"
 PROXIED="false"
 
