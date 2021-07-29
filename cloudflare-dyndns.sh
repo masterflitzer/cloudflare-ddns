@@ -6,7 +6,7 @@ INTERVAL="5"
 COUNTER="10"
 
 # following permissions needed: #dns_records:edit
-API_KEY=""
+API_TOKEN=""
 # when you want to update "www.example.com", "www" is the RECORD_NAME and "example.com" is the ZONE_NAME
 ZONE_NAME=""
 # multiple record names separated by space, e.g. "www mail smtp"
@@ -60,7 +60,7 @@ done
 
 echo "#==============================================================================#"
 
-ZONE_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r '.result[] | select(.name == \"${ZONE_NAME}\") | .id')"
+ZONE_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r '.result[] | select(.name == \"${ZONE_NAME}\") | .id')"
 echo
 echo "1. ZONE_NAME='${ZONE_NAME}'"
 echo "2. ZONE_ID='${ZONE_ID}'"
@@ -69,57 +69,57 @@ echo "2. ZONE_ID='${ZONE_ID}'"
 ### IPv4
 
 ### Get RECORD_ID for ZONE_NAME
-RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"A\")) | .id")"
+RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 echo
 echo "3. RECORD_ID='${RECORD_ID}'"
 
 ### Set IPv4
-curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IPv4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
+curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IPv4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
 echo
 
 #------------------------------------------------------------------------------#
 ### IPv4 - RECORD_NAME
 
 for RECORD_NAME in ${RECORD_NAME_V4}
-{
+do
 	### Get RECORD_ID for ZONE_NAME
-	RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"A\")) | .id")"
+	RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 	echo
 	echo "4. RECORD_NAME.ZONE_NAME='${RECORD_NAME}.${ZONE_NAME}'"
 	echo "5. RECORD_ID='${RECORD_ID}'"
 
 	### Set IPv4
-	curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IPv4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
+	curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IPv4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
 	echo
-}
+done
 
 #------------------------------------------------------------------------------#
 ### IPv6
 
 ### Get RECORD_ID for ZONE_NAME
-RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
+RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 echo
 echo "6. RECORD_ID='${RECORD_ID}'"
 
 ### Set IPv6
-curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IPv6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
+curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IPv6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
 echo
 
 #------------------------------------------------------------------------------#
 ### IPv6 - RECORD_NAME
 
 for RECORD_NAME in ${RECORD_NAME_V6}
-{
+do
 	### Get RECORD_ID for ZONE_NAME
-	RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
+	RECORD_ID="$(curl -X GET "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 	echo
 	echo "7. RECORD_NAME.ZONE_NAME='${RECORD_NAME}.${ZONE_NAME}'"
 	echo "8. RECORD_ID='${RECORD_ID}'"
 
 	### Set IPv6
-	curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_KEY}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IPv6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
+	curl -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IPv6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"
 	echo
-}
+done
 
 #==============================================================================#
 
