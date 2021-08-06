@@ -8,4 +8,8 @@ Simple DynDNS Shell Script for Cloudflare
 
 ## Crontab
 
+@hourly    root    cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
+
+or
+
 0    *    *    *    *    root    cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
