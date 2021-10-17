@@ -10,9 +10,9 @@ COUNTER="10"
 API_ENDPOINT="https://api.cloudflare.com/client/v4"
 # custom API-Token (not global API-Key)
 # following permissions needed: #dns_records:edit
-API_TOKEN=$(cat "${CONFIG_FILE}" | grep -E "^API_TOKEN=" | head -1 | cut -d "=" -f2)
+API_TOKEN="$(cat "${CONFIG_FILE}" | grep -E "^API_TOKEN=" | head -1 | cut -d "=" -f2)"
 # when you want to update "www.example.com", "www" is the RECORD_NAME and "example.com" is the ZONE_NAME
-ZONE_NAME=$(cat "${CONFIG_FILE}" | grep -E "^ZONE_NAME=" | head -1 | cut -d "=" -f2)
+ZONE_NAME="$(cat "${CONFIG_FILE}" | grep -E "^ZONE_NAME=" | head -1 | cut -d "=" -f2)"
 # multiple record names separated by space, e.g. "www mail smtp"
 RECORD_NAME_V4=""
 RECORD_NAME_V6=""
