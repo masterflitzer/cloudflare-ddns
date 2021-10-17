@@ -2,14 +2,15 @@
 
 ### Variables
 
+CONFIG_FILE="$(dirname "$0")/$(basename -- "$0" .sh).ini"
 INTERVAL="5"
 COUNTER="10"
 
 # custom API-Token (not global API-Key)
 # following permissions needed: #dns_records:edit
-API_TOKEN="1234567893feefc5f0q5000bfo0c38d90bbeb"
+API_TOKEN=$(cat "${CONFIG_FILE}" | grep -E "^API_TOKEN=" | head -1 | cut -d "=" -f2)
 # when you want to update "www.example.com", "www" is the RECORD_NAME and "example.com" is the ZONE_NAME
-ZONE_NAME="example.com"
+ZONE_NAME=$(cat "${CONFIG_FILE}" | grep -E "^ZONE_NAME=" | head -1 | cut -d "=" -f2)
 # multiple record names separated by space, e.g. "www mail smtp"
 RECORD_NAME_V4="www mail smtp"
 RECORD_NAME_V6="www mail smtp"
@@ -125,4 +126,3 @@ do
 done
 
 #==============================================================================#
-
