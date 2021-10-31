@@ -72,13 +72,13 @@ echo "IPv6: $IP_V6"
 printf "\n#==============================================================================#\n\n"
 
 ### Get Zone ID
-ZONE_ID="$(curl -X GET "${API_ENDPOINT}/zones" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select(.name == \"${ZONE_NAME}\") | .id")"
+ZONE_ID="$(curl -s -X GET "${API_ENDPOINT}/zones" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select(.name == \"${ZONE_NAME}\") | .id")"
 
 ### Get Record ID (IPv4)
-RECORD_ID_V4="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"A\")) | .id")"
+RECORD_ID_V4="$(curl -s -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 
 ### Get Record ID (IPv6)
-RECORD_ID_V6="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
+RECORD_ID_V6="$(curl -s -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 
 echo "Record Name      = $ZONE_NAME"
 echo "ZONE_ID          = $ZONE_ID"
@@ -90,12 +90,12 @@ echo "Record ID (IPv6) = $RECORD_ID_V6"
 printf "\n#==============================================================================#\n\n"
 
 echo "IPv4: Updating DNS Record to '$IP_V4'"
-curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V4}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V4}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
 
 printf "\n#------------------------------------------------------------------------------#\n\n"
 
 echo "IPv6: Updating DNS Record to '$IP_V6'"
-curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V6}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V6}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
 
 
 ### Set IP for Record Names
@@ -108,13 +108,13 @@ for RECORD_NAME in $RECORD_NAME_V4
 do
     if test $COUNTER -gt 0; then printf "\n#------------------------------------------------------------------------------#\n\n"; fi
 
-    RECORD_ID="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"A\")) | .id")"
+    RECORD_ID="$(curl -s -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 
     echo "Record Name      = $RECORD_NAME.$ZONE_NAME"
     echo "Record ID        = $RECORD_ID"
 
     echo "Updating DNS Record to '$IP_V4'"
-    curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+    curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
 
     let "COUNTER += 1"
 done
@@ -130,13 +130,13 @@ for RECORD_NAME in $RECORD_NAME_V6
 do
     if test $COUNTER -gt 0; then printf "\n#------------------------------------------------------------------------------#\n\n"; fi
 
-    RECORD_ID="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
+    RECORD_ID="$(curl -s -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 
     echo "Record Name      = $RECORD_NAME.$ZONE_NAME"
     echo "Record ID        = $RECORD_ID"
 
     echo "Updating DNS Record to '${IP_V6}'"
-    curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+    curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
 
     let "COUNTER += 1"
 done
