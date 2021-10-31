@@ -6,7 +6,7 @@ CONFIG_FILE="$(dirname "$0")/$(basename -- "$0" .sh).ini"
 INTERVAL="5"
 COUNTER="10"
 
-# multiple record names separated by space, e.g. "www mail smtp"
+# multiple record names (subdomains) separated by space, e.g. "www mail smtp"
 RECORD_NAME_V4=""
 RECORD_NAME_V6=""
 TTL="1"
@@ -42,9 +42,9 @@ links_IPv6() {
 ##### Script
 
 ### Get IPs
-printf "#==============================================================================#\n\n"
+printf "\n#==============================================================================#\n\n"
 
-echo -n "IPv4: Determining IP address"
+echo -n "Determining IPv4 address"
 links_IPv4
 while test -z "${IP_V4}" -a "${COUNTER_V4}" -gt "0"
 do
@@ -55,7 +55,7 @@ do
 done
 echo
 
-echo -n "IPv6: Determining IP address"
+echo -n "Determining IPv6 address"
 links_IPv6
 while test -z "${IP_V6}" -a "${COUNTER_V6}" -gt "0"
 do
@@ -66,24 +66,24 @@ do
 done
 echo
 
-### Get Zone ID
+echo "IPv4: ${IP_V4}"
+echo "IPv6: ${IP_V6}"
+
 printf "\n#==============================================================================#\n\n"
 
+### Get Zone ID
 ZONE_ID="$(curl -X GET "${API_ENDPOINT}/zones" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select(.name == \"${ZONE_NAME}\") | .id")"
 
-echo "ZONE_ID         =   '${ZONE_ID}'"
-
-
-### Get Record ID
-printf "\n#==============================================================================#\n\n"
-
+### Get Record ID (IPv4)
 RECORD_ID_V4="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 
+### Get Record ID (IPv6)
 RECORD_ID_V6="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 
-echo "Record Name     =   '${ZONE_NAME}'"
-echo "IPv4: Record ID =   '${RECORD_ID_V4}'"
-echo "IPv6: Record ID =   '${RECORD_ID_V6}'"
+echo "Record Name      = ${ZONE_NAME}"
+echo "ZONE_ID          = ${ZONE_ID}"
+echo "Record ID (IPv4) = ${RECORD_ID_V4}"
+echo "Record ID (IPv6) = ${RECORD_ID_V6}"
 
 
 ### Set IP
@@ -101,16 +101,17 @@ curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V6}" -H "A
 ### Set IP for Record Names
 printf "\n#==============================================================================#\n\n"
 
-printf "IPv4: Subdomains\n\n"
+if test ! -z "${RECORD_NAME_V4// }"; then printf "IPv4: Subdomains\n\n"; fi
+
 COUNTER="0"
-for RECORD_NAME in ${RECORD_NAME_V4}
+for RECORD_NAME in $RECORD_NAME_V4
 do
     if test $COUNTER -gt 0; then printf "\n#------------------------------------------------------------------------------#\n\n"; fi
 
     RECORD_ID="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"A\")) | .id")"
 
-    echo "Record Name     =   '${RECORD_NAME}.${ZONE_NAME}'"
-    echo "Record ID       =   '${RECORD_ID}'"
+    echo "Record Name      = ${RECORD_NAME}.${ZONE_NAME}"
+    echo "Record ID        = ${RECORD_ID}"
 
     echo "Updating DNS Record to '${IP_V4}'"
     curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
@@ -118,18 +119,21 @@ do
     let "COUNTER += 1"
 done
 
-printf "\n#==============================================================================#\n\n"
+if test $COUNTER -gt 0; then
+    printf "#==============================================================================#\n\n"
+fi
 
-printf "IPv6: Subdomains\n\n"
+if test ! -z "${RECORD_NAME_V6// }"; then printf "IPv6: Subdomains\n\n"; fi
+
 COUNTER="0"
-for RECORD_NAME in ${RECORD_NAME_V6}
+for RECORD_NAME in $RECORD_NAME_V6
 do
     if test $COUNTER -gt 0; then printf "\n#------------------------------------------------------------------------------#\n\n"; fi
 
     RECORD_ID="$(curl -X GET "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" 2>/dev/null | jq -r ".result[] | select((.name == \"${RECORD_NAME}.${ZONE_NAME}\") and (.type == \"AAAA\")) | .id")"
 
-    echo "Record Name     =   '${RECORD_NAME}.${ZONE_NAME}'"
-    echo "Record ID       =   '${RECORD_ID}'"
+    echo "Record Name      = ${RECORD_NAME}.${ZONE_NAME}"
+    echo "Record ID        = ${RECORD_ID}"
 
     echo "Updating DNS Record to '${IP_V6}'"
     curl -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${RECORD_NAME}.${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
@@ -137,4 +141,6 @@ do
     let "COUNTER += 1"
 done
 
-printf "\n#==============================================================================#\n"
+if test $COUNTER -gt 0; then
+    printf "#==============================================================================#\n\n"
+fi
