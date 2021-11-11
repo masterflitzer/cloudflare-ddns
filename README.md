@@ -9,9 +9,6 @@ Simple DynDNS Shell Script for the DNS provider Cloudflare
 ## Crontab
 
 ```
+@reboot root cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
 @hourly root cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
-```
-or
-```
-0 * * * * root cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
 ```
