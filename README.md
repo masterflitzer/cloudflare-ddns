@@ -1,5 +1,5 @@
-# cloudflare-dyndns
-Simple DynDNS Shell Script for the DNS provider Cloudflare
+# cloudflare-ddns
+Simple DDNS Shell Script for the DNS provider Cloudflare
 
 ## Dependencies
 
@@ -9,6 +9,6 @@ Simple DynDNS Shell Script for the DNS provider Cloudflare
 ## Crontab
 
 ```
-@reboot root cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
-@hourly root cloudflare-dyndns.sh > /var/log/cloudflare-dyndns.log 2>&1
+@reboot root cloudflare-ddns.sh > /var/log/cloudflare-ddns.log 2>&1
+@hourly root cloudflare-ddns.sh > /var/log/cloudflare-ddns.log 2>&1
 ```

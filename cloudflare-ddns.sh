@@ -6,7 +6,11 @@ CONFIG_FILE="$(dirname "$0")/$(basename -- "$0" .sh).ini"
 INTERVAL="5"
 COUNTER="10"
 
-# multiple record names (subdomains) separated by space, e.g. "www mail smtp"
+# boolean
+# if "true" the dns record for the root domain will be updated
+UPDATE_ROOT_DOMAIN="true"
+# multiple record names (subdomains) to be updated
+# separated by space, e.g. "www mail smtp"
 RECORD_NAME_V4=""
 RECORD_NAME_V6=""
 TTL="1"
@@ -89,14 +93,16 @@ echo "Record ID (IPv6) = $RECORD_ID_V6"
 ### Set IP
 printf "\n#==============================================================================#\n\n"
 
-echo "IPv4: Updating DNS Record to '$IP_V4'"
-curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V4}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+if test $UPDATE_ROOT_DOMAIN == "true"
+then
+    echo "IPv4: Updating DNS Record to '$IP_V4'"
+    curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V4}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V4}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
 
-printf "\n#------------------------------------------------------------------------------#\n\n"
+    printf "\n#------------------------------------------------------------------------------#\n\n"
 
-echo "IPv6: Updating DNS Record to '$IP_V6'"
-curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V6}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
-
+    echo "IPv6: Updating DNS Record to '$IP_V6'"
+    curl -s -X PUT "${API_ENDPOINT}/zones/${ZONE_ID}/dns_records/${RECORD_ID_V6}" -H "Authorization: Bearer ${API_TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"AAAA\",\"name\":\"${ZONE_NAME}\",\"content\":\"${IP_V6}\",\"ttl\":${TTL},\"proxied\":${PROXIED}}"; echo
+fi
 
 ### Set IP for Record Names
 printf "\n#==============================================================================#\n\n"
