@@ -1,0 +1,11 @@
+{
+    "apiToken": "1234567893feefc5f0q5000bfo0c38d90bbeb",
+    "zoneName": "example.com",
+    "ipAttempts": 10,
+    "ipIntervall": 5,
+    "updateRootDomain": true,
+    "updateSubDomains": true,
+    "ttl": 1,
+    "proxied": false,
+    "apiEndpoint": "https://api.cloudflare.com/client/v4"
+}

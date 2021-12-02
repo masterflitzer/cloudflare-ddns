@@ -2,7 +2,8 @@
 
 ##### Variables
 
-CONFIG_FILE="$(dirname "$0")/$(basename -- "$0" .sh).ini"
+#CONFIG_FILE="$(dirname "$0")/$(basename -- "$0" .sh).json"
+CONFIG_FILE="/etc/$(basename -- "$0" .sh)/config.json"
 INTERVAL="5"
 COUNTER="10"
 
@@ -53,7 +54,7 @@ links_IPv4
 while test -z "$IP_V4" -a "$COUNTER_V4" -gt "0"
 do
     echo -n '.'
-    COUNTER_V4="$(echo "$COUNTER_V4"|awk '{print $1-1}')"
+    COUNTER_V4="$(echo "$COUNTER_V4" | awk '{print $1-1}')"
     sleep $INTERVAL
     links_IPv4
 done
@@ -64,7 +65,7 @@ links_IPv6
 while test -z "$IP_V6" -a "$COUNTER_V6" -gt "0"
 do
     echo -n '.'
-    COUNTER_V6="$(echo "$COUNTER_V6"|awk '{print $1-1}')"
+    COUNTER_V6="$(echo "$COUNTER_V6" | awk '{print $1-1}')"
     sleep $INTERVAL
     links_IPv6
 done
